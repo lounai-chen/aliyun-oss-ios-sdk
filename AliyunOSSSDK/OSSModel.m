@@ -16,6 +16,9 @@
 #import <UIKit/UIDevice.h>
 #endif
 
+#import <Foundation/Foundation.h>
+#import <CommonCrypto/CommonCrypto.h>
+
 #import "OSSAllRequestNeededMessage.h"
 
 @implementation NSDictionary (OSS)
@@ -227,7 +230,7 @@
 
 @implementation OSSAuthCredentialProvider
 
-- (instancetype)initWithAuthServerUrl:(NSString *)data mkey:(NSString *)mkey
+- (instancetype)initWithAuthServerUrl:(NSString *)data mkey:(NSString *)mkey 
 {
     return [self initWithAuthServerUrl:data mkey:mkey responseDecoder:nil];
 }
@@ -261,14 +264,14 @@
          
     }];
     if(self){
-        self.authServerUrl = authServerUrl;
+       // self.authServerUrl = authServerUrl;
     }
     return self;
 }
 //解密
 - (NSData*)aes256EncryptWithString:(NSString*)string key:(NSString *)key{
-    if (!key || key.length !=16) {
-        NSLog(@"key length must be 16");
+    if (!key ) {
+        NSLog(@"key aes error");
         return nil;
     }
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
@@ -277,10 +280,7 @@
 }
 
 - (NSData *)aes256EncryptWithData:(NSData *)data key:(NSString *)key{
-    if (!key || key.length !=16) {
-        NSLog(@"key length must be 16");
-        return nil;
-    }
+    
     char keyPtr[kCCKeySizeAES256+1];
     bzero(keyPtr, sizeof(keyPtr));
     [key getCString:keyPtr maxLength:sizeof(keyPtr) encoding:NSUTF8StringEncoding];
