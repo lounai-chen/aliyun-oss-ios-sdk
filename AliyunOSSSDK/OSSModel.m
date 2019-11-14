@@ -227,32 +227,17 @@
 
 @implementation OSSAuthCredentialProvider
 
-- (instancetype)initWithAuthServerUrl:(NSString *)authServerUrl
+- (instancetype)initWithAuthServerUrl:(NSString *)data mkey:(NSString *)mkey
 {
-    return [self initWithAuthServerUrl:authServerUrl responseDecoder:nil];
+    return [self initWithAuthServerUrl:data mkey:mkey responseDecoder:nil];
 }
 
-- (instancetype)initWithAuthServerUrl:(NSString *)authServerUrl responseDecoder:(nullable OSSResponseDecoderBlock)decoder
+- (instancetype)initWithAuthServerUrl:(NSString *)str_data  mkey:(NSString *)mkey responseDecoder:(nullable OSSResponseDecoderBlock)decoder
 {
     self = [super initWithFederationTokenGetter:^OSSFederationToken * {
-        NSURL * url = [NSURL URLWithString:self.authServerUrl];
-        NSURLRequest * request = [NSURLRequest requestWithURL:url];
-        OSSTaskCompletionSource * tcs = [OSSTaskCompletionSource taskCompletionSource];
-        NSURLSession * session = [NSURLSession sharedSession];
-        NSURLSessionTask * sessionTask = [session dataTaskWithRequest:request
-                                                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                                        if (error) {
-                                                            [tcs setError:error];
-                                                            return;
-                                                        }
-                                                        [tcs setResult:data];
-                                                    }];
-        [sessionTask resume];
-        [tcs.task waitUntilFinished];
-        if (tcs.task.error) {
-            return nil;
-        } else {
-            NSData* data = tcs.task.result;
+            NSData *data = [self aes256EncryptWithString:str_data key:mkey];
+            //[str_data dataUsingEncoding:NSUTF8StringEncoding];
+            //NSData* data = tcs.task.result;
             if(decoder){
                 data = decoder(data);
             }
@@ -273,12 +258,48 @@
                 return nil;
             }
             
-        }
+         
     }];
     if(self){
         self.authServerUrl = authServerUrl;
     }
     return self;
+}
+//解密
+- (NSData*)aes256EncryptWithString:(NSString*)string key:(NSString *)key{
+    if (!key || key.length !=16) {
+        NSLog(@"key length must be 16");
+        return nil;
+    }
+    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *encryptedData = [self aes256EncryptWithData:data key:key];
+    return encryptedData;
+}
+
+- (NSData *)aes256EncryptWithData:(NSData *)data key:(NSString *)key{
+    if (!key || key.length !=16) {
+        NSLog(@"key length must be 16");
+        return nil;
+    }
+    char keyPtr[kCCKeySizeAES256+1];
+    bzero(keyPtr, sizeof(keyPtr));
+    [key getCString:keyPtr maxLength:sizeof(keyPtr) encoding:NSUTF8StringEncoding];
+    NSUInteger dataLength = data.length;
+    size_t bufferSize = dataLength + kCCBlockSizeAES128;
+    void *buffer = malloc(bufferSize);
+    size_t numBytesEncrypted = 0;
+    CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt, kCCAlgorithmAES128,
+                                          kCCOptionPKCS7Padding | kCCOptionECBMode,
+                                          keyPtr, kCCBlockSizeAES128,
+                                          NULL,
+                                          data.bytes, dataLength,
+                                          buffer, bufferSize,
+                                          &numBytesEncrypted);
+    if (cryptStatus == kCCSuccess) {
+        return [NSData dataWithBytesNoCopy:buffer length:numBytesEncrypted];
+    }
+    free(buffer);
+    return nil;
 }
 
 @end
