@@ -232,7 +232,7 @@
 
 - (instancetype)initWithAuthServerUrl:(NSString *)AccessKeyId AccessKeySecret:(NSString *)AccessKeySecret SecurityToken:(NSString *)SecurityToken Expiration:(NSString *)Expiration 
 {
-    return [self initWithAuthServerUrl:data mkey:mkey responseDecoder:nil];
+    return [self initWithAuthServerUrl:AccessKeyId  AccessKeySecret:AccessKeySecret SecurityToken:SecurityToken responseDecoder:nil];
 }
 
 - (instancetype)initWithAuthServerUrl:(NSString *)AccessKeyId AccessKeySecret:(NSString *)AccessKeySecret SecurityToken:(NSString *)SecurityToken Expiration:(NSString *)Expiration  responseDecoder:(nullable OSSResponseDecoderBlock)decoder
@@ -241,12 +241,12 @@
             //NSData *data = [self aes256EncryptWithString:str_data key:mkey];
             //[str_data dataUsingEncoding:NSUTF8StringEncoding];
             //NSData* data = tcs.task.result;
-            if(decoder){
-                data = decoder(data);
-            }
+            // if(decoder){
+            //     data = decoder(data);
+            // }
             //NSDictionary * object = [NSJSONSerialization JSONObjectWithData:data
-                                                                    options:kNilOptions
-                                                                      error:nil];
+                                                                    // options:kNilOptions
+                                                                    //   error:nil];
             //int statusCode = [[object objectForKey:@"StatusCode"] intValue];
             //if (statusCode == 200) {
                 OSSFederationToken * token = [OSSFederationToken new];
