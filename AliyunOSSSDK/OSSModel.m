@@ -232,7 +232,7 @@
 
 - (instancetype)initWithAuthServerUrl:(NSString *)AccessKeyId AccessKeySecret:(NSString *)AccessKeySecret SecurityToken:(NSString *)SecurityToken Expiration:(NSString *)Expiration 
 {
-    return [self initWithAuthServerUrl:AccessKeyId  AccessKeySecret:AccessKeySecret SecurityToken:SecurityToken responseDecoder:nil];
+    return [self initWithAuthServerUrl:AccessKeyId  AccessKeySecret:AccessKeySecret SecurityToken:SecurityToken Expiration:Expiration responseDecoder:nil];
 }
 
 - (instancetype)initWithAuthServerUrl:(NSString *)AccessKeyId AccessKeySecret:(NSString *)AccessKeySecret SecurityToken:(NSString *)SecurityToken Expiration:(NSString *)Expiration  responseDecoder:(nullable OSSResponseDecoderBlock)decoder
