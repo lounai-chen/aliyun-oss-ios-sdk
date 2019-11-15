@@ -230,36 +230,36 @@
 
 @implementation OSSAuthCredentialProvider
 
-- (instancetype)initWithAuthServerUrl:(NSString *)data mkey:(NSString *)mkey 
+- (instancetype)initWithAuthServerUrl:(NSString *)AccessKeyId AccessKeySecret:(NSString *)AccessKeySecret SecurityToken:(NSString *)SecurityToken Expiration:(NSString *)Expiration 
 {
     return [self initWithAuthServerUrl:data mkey:mkey responseDecoder:nil];
 }
 
-- (instancetype)initWithAuthServerUrl:(NSString *)str_data  mkey:(NSString *)mkey responseDecoder:(nullable OSSResponseDecoderBlock)decoder
+- (instancetype)initWithAuthServerUrl:(NSString *)AccessKeyId AccessKeySecret:(NSString *)AccessKeySecret SecurityToken:(NSString *)SecurityToken Expiration:(NSString *)Expiration  responseDecoder:(nullable OSSResponseDecoderBlock)decoder
 {
     self = [super initWithFederationTokenGetter:^OSSFederationToken * {
-            NSData *data = [self aes256EncryptWithString:str_data key:mkey];
+            //NSData *data = [self aes256EncryptWithString:str_data key:mkey];
             //[str_data dataUsingEncoding:NSUTF8StringEncoding];
             //NSData* data = tcs.task.result;
             if(decoder){
                 data = decoder(data);
             }
-            NSDictionary * object = [NSJSONSerialization JSONObjectWithData:data
+            //NSDictionary * object = [NSJSONSerialization JSONObjectWithData:data
                                                                     options:kNilOptions
                                                                       error:nil];
-            int statusCode = [[object objectForKey:@"StatusCode"] intValue];
-            if (statusCode == 200) {
+            //int statusCode = [[object objectForKey:@"StatusCode"] intValue];
+            //if (statusCode == 200) {
                 OSSFederationToken * token = [OSSFederationToken new];
                 // All the entries below are mandatory.
-                token.tAccessKey = [object objectForKey:@"AccessKeyId"];
-                token.tSecretKey = [object objectForKey:@"AccessKeySecret"];
-                token.tToken = [object objectForKey:@"SecurityToken"];
-                token.expirationTimeInGMTFormat = [object objectForKey:@"Expiration"];
-                OSSLogDebug(@"token: %@ %@ %@ %@", token.tAccessKey, token.tSecretKey, token.tToken, [object objectForKey:@"Expiration"]);
+                token.tAccessKey = AccessKeyId;//[object objectForKey:@"AccessKeyId"];
+                token.tSecretKey = AccessKeySecret;//[object objectForKey:@"AccessKeySecret"];
+                token.tToken = SecurityToken;//[object objectForKey:@"SecurityToken"];
+                token.expirationTimeInGMTFormat = Expiration; //[object objectForKey:@"Expiration"];
+                OSSLogDebug(@"token: %@ %@ %@ %@", token.tAccessKey, token.tSecretKey, token.tToken, Expiration);
                 return token;
-            }else{
-                return nil;
-            }
+            // }else{
+            //     return nil;
+            // }
             
          
     }];

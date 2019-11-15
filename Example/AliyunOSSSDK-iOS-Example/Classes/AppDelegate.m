@@ -21,7 +21,7 @@
     // Override point for customization after application launch.
     // 针对只有一个region下bucket的数据上传下载操作时,可以将client实例给App单例持有。
     //id<OSSCredentialProvider> credentialProvider = [[OSSAuthCredentialProvider alloc] initWithAuthServerUrl:OSS_STSTOKEN_URL];
-      id<OSSCredentialProvider> credentialProvider = [[OSSAuthCredentialProvider alloc] initWithAuthServerUrl:@""  mkey:@""];
+      id<OSSCredentialProvider> credentialProvider = [[OSSAuthCredentialProvider alloc] initWithAuthServerUrl:@""  AccessKeySecret:@"" SecurityToken:@"" Expiration:@""];
     OSSClientConfiguration *cfg = [[OSSClientConfiguration alloc] init];
     cfg.maxRetryCount = 3;
     cfg.timeoutIntervalForRequest = 15;
